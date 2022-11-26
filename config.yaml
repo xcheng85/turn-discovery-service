@@ -1,0 +1,5 @@
+turn_configs:
+  port: 3478
+  ttl_seconds: 3600
+  user_name: username
+  use_lt_cred_mech: true
