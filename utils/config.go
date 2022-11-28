@@ -5,6 +5,7 @@ import (
 	"go.uber.org/zap"
 	"io"
 	"os"
+	"encoding/json"
 )
 
 type TurnConfig struct {
@@ -64,4 +65,20 @@ func GenerateSecretJson(secretPath string, logger *zap.SugaredLogger) string {
 	}
 	logger.Infof("Bytes Written: %d\n", bytesWritten)
 	return newPath
+}
+
+func NewConfig(logger *zap.SugaredLogger) *AppConfig{
+	configPath := GetEnvVar("CONFIG_PATH", true, "config.yaml")
+	secretPath := GetEnvVar("SECRET_PATH", true, "secret")
+	elbExternalIp := GetEnvVar("ELB_EXTERNAL_IP", true, "127.0.0.1")
+	newSecretPath := GenerateSecretJson(secretPath, logger)
+	
+	cfg, err := ParseConfigFiles(configPath, newSecretPath)
+	if err != nil {
+		logger.Fatal(err)
+	}
+	s, _ := json.Marshal(cfg)
+	logger.Infof(string(s))
+	cfg.TurnConfig.ExternalIp = elbExternalIp
+	return cfg
 }

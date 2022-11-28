@@ -2,7 +2,6 @@ package main
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"log"
 	"net/http"
@@ -25,7 +24,7 @@ func main() {
 		di.Provide(NewServer),   // provide http server
 		di.Provide(NewServeMux), // provide http serve mux
 		di.Provide(utils.NewLogger),
-		di.Provide(NewConfig),
+		di.Provide(utils.NewConfig),
 		// controllers as []Controller group
 		di.Provide(controllers.NewK8sLivenessProbeController, di.As(new(controllers.Controller))),
 		di.Provide(controllers.NewK8sReadinessProbeController, di.As(new(controllers.Controller))),
@@ -89,20 +88,4 @@ func NewServeMux(controllers []controllers.Controller, cfg *utils.AppConfig) *ht
 		controller.RegisterRoutes(mux, cfg)
 	}
 	return mux
-}
-
-func NewConfig(logger *zap.SugaredLogger) *utils.AppConfig{
-	configPath := utils.GetEnvVar("CONFIG_PATH", true, "config.yaml")
-	secretPath := utils.GetEnvVar("SECRET_PATH", true, "secret")
-	elbExternalIp := utils.GetEnvVar("ELB_EXTERNAL_IP", true, "127.0.0.1")
-	newSecretPath := utils.GenerateSecretJson(secretPath, logger)
-	
-	cfg, err := utils.ParseConfigFiles(configPath, newSecretPath)
-	if err != nil {
-		logger.Fatal(err)
-	}
-	s, _ := json.Marshal(cfg)
-	logger.Infof(string(s))
-	cfg.TurnConfig.ExternalIp = elbExternalIp
-	return cfg
 }

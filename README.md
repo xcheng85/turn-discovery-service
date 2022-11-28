@@ -12,6 +12,8 @@ go mod init github.com/xcheng85/turn-discovery-service
 go get -u go.uber.org/zap
 # global configuration
 go get -u github.com/ilyakaznacheev/cleanenv
+# for unit test
+go get -u github.com/stretchr/testify/assert
 ```
 ## build
 ```shell
@@ -21,6 +23,11 @@ go build .
 ## Run locally
 ```shell
 CONFIG_PATH="config.yaml" SECRET_PATH="secret" ELB_EXTERNAL_IP="0.0.0.0" go run .
+```
+
+## Unit Test
+```shell
+CONFIG_PATH="config.yaml" SECRET_PATH="secret" ELB_EXTERNAL_IP="0.0.0.0" go test ./... -covermode=count -coverprofile=coverage.out
 ```
 
 ## golang

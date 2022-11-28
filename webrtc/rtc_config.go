@@ -88,7 +88,7 @@ func MakeRTCPeerConnection(ips []string, port string, user string, secret string
 			})
 		}
 	}
-
+	
 	config.LifetimeDuration = fmt.Sprintf("%ds", ttlSeconds)
 	config.BlockStatus = "NOT_BLOCKED"
 	config.IceTransportPolicy = "all"
