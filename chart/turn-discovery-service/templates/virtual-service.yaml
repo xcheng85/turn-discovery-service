@@ -1,0 +1,48 @@
+apiVersion: networking.istio.io/v1beta1
+kind: VirtualService
+metadata:
+  name: {{ include "turn-discovery-service.fullname" . }}
+  labels:
+    {{- include "turn-discovery-service.labels" . | nindent 4 }}
+spec:
+  gateways:
+    {{ toYaml .Values.virtualservice.gateways | indent 4 }}
+  hosts:
+    - "somehost"
+  http:
+    - name: {{ include "turn-discovery-service.fullname" . }}
+      match:
+        - uri:
+            prefix: {{ .Values.virtualservice.prefix }}
+      corsPolicy:
+        allowOrigins:
+        - exact: http://127.0.0.1:4200
+        - exact: http://localhost:4200
+        allowMethods:
+        - POST
+        - GET
+        - PUT
+        - DELETE
+        - OPTIONS
+        allowHeaders:
+        - appKey
+        - authorization
+        - content-type
+        - correlation-id
+        - session-id
+      route:
+        - destination:
+            host: {{ include "turn-discovery-service.fullname" . }}
+            port:
+              number: {{ .Values.service.port }}
+          headers:
+            response:
+              set:
+                X-Frame-Options: deny
+                X-XSS-Protection: 1; mode=block
+                Cache-Control: no-store
+                X-Content-Type-Options: nosniff
+                Referrer-Policy: no-referrer
+                Content-Security-Policy: default-src 'self'
+                Strict-Transport-Security: max-age=18410000; includeSubDomains
+                Access-Control-Allow-Method: POST, GET, PUT, DELETE, OPTIONS

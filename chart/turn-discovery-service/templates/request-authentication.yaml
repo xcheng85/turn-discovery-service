@@ -1,0 +1,14 @@
+apiVersion: security.istio.io/v1beta1
+kind: RequestAuthentication
+metadata:
+  name: {{ include "turn-discovery-service.fullname" . }}
+  labels:
+    {{- include "turn-discovery-service.labels" . | nindent 4 }}
+spec:
+  selector:
+    matchLabels:
+      {{- include "turn-discovery-service.selectorLabels" . | nindent 6 }}
+  jwtRules:
+  - issuer: {{ .Values.jwt.issuer }}
+    forwardOriginalToken: true
+    jwksUri: {{ .Values.jwt.jwksUri }}

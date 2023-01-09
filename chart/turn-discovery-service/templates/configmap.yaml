@@ -1,0 +1,9 @@
+{{- $ConfigPath := printf "%s" .Values.ConfigPath -}}
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: "{{ .Values.app }}-configmap"
+  labels:
+    {{- include "turn-discovery-service.labels" . | nindent 4 }}
+data:
+{{ (.Files.Glob $ConfigPath).AsConfig | indent 2 }}
